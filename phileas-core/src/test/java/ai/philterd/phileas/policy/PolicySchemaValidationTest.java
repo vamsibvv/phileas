@@ -76,6 +76,19 @@ public class PolicySchemaValidationTest {
     }
 
     @Test
+    public void validateNpiDeaNumberAndMbiPolicy() {
+
+        final String jsonPolicy = "{\"identifiers\": {\"npi\": {\"npiFilterStrategies\": [{\"strategy\": \"LAST_4\"}]}, "
+                + "\"deaNumber\": {\"deaNumberFilterStrategies\": [{\"strategy\": \"MASK\"}]}, "
+                + "\"mbi\": {\"mbiFilterStrategies\": [{\"strategy\": \"REDACT\"}]}}}";
+
+        final boolean valid = PolicySchema.validate(jsonPolicy);
+
+        Assertions.assertTrue(valid);
+
+    }
+
+    @Test
     public void validatePhoneNumberRegionString() {
 
         final String jsonPolicy = "{\"identifiers\": {\"phoneNumber\": {\"region\": \"GB\"}}}";

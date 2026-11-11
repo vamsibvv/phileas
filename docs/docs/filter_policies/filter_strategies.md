@@ -230,6 +230,7 @@ With `REALISTIC`, the replacement depends on the filter type:
 | `passportNumber` | A value with the same shape, with a US passport prefix where the identified number has one, so the passport filter detects it. |
 | `phoneNumber` | The same format with each digit replaced, keeping parentheses, spaces, hyphens, dots, and a leading plus sign. |
 | `itin`, `canadaSin` | A value of that type in the same format. An ITIN begins with 9 and has fourth and fifth digits in an IRS-issued range, and a SIN passes the Luhn check. |
+| `npi`, `deaNumber`, `mbi` | A value of that type with a valid check digit or format. An NPI begins with 1 or 2. A DEA number keeps the identified number's first letter (the registrant type), and a `9` in its second position, in the same case. An MBI keeps the identified MBI's separators and case. |
 | All other types, including `ssn`, `bankRoutingNumber`, `driversLicense`, `ein`, `phoneNumberExtension`, `trackingNumber`, `pheyes`, custom `identifiers`, custom `dictionaries`, and `sections` | A random value with the same shape: each digit is replaced with a digit and each letter with a letter of the same case, and other characters are kept. The value is not checked against the type's rules, so for example an SSN may begin with 9, and a bank routing number's checksum or a tracking number's carrier prefix may not be valid. |
 
 If a value that differs from the identified text cannot be generated, a random UUID is used instead.

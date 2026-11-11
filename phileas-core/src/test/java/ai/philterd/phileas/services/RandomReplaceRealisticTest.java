@@ -20,6 +20,9 @@ import ai.philterd.phileas.model.filtering.TextFilterResult;
 import ai.philterd.phileas.policy.Policy;
 import ai.philterd.phileas.services.context.DefaultContextService;
 import ai.philterd.phileas.services.disambiguation.vector.InMemoryVectorService;
+import ai.philterd.phileas.services.filters.regex.DeaNumberFilter;
+import ai.philterd.phileas.services.filters.regex.MbiFilter;
+import ai.philterd.phileas.services.filters.regex.NpiFilter;
 import ai.philterd.phileas.services.filters.filtering.PlainTextFilterService;
 import ai.philterd.phileas.services.validators.LuhnValidator;
 import ai.philterd.phileas.utils.IbanValidator;
@@ -63,6 +66,7 @@ public class RandomReplaceRealisticTest {
                 Arguments.of("creditCard", "creditCardFilterStrategies", "card ", "4111111111111111", " ok.", "4\\d{15}"),
                 Arguments.of("currency", "currencyFilterStrategies", "paid ", "$100.00", " today.", "\\$\\d{3}\\.\\d{2}"),
                 Arguments.of("date", "dateFilterStrategies", "born ", "May 22, 1999", " here.", "[A-Z][a-z]+ \\d{1,2}, \\d{4}"),
+                Arguments.of("deaNumber", "deaNumberFilterStrategies", "dea ", "AB1234563", ".", "A[A-Z]\\d{7}"),
                 Arguments.of("driversLicense", "driversLicenseFilterStrategies", "license ", "123456789", " ok.", "\\d{9}"),
                 Arguments.of("ein", "einFilterStrategies", "ein ", "12-3456789", ".", "\\d{2}-\\d{7}"),
                 Arguments.of("emailAddress", "emailAddressFilterStrategies", "mail ", "john@example.com", " now.", "[A-Za-z0-9]+@[a-z]+\\.com"),
@@ -72,6 +76,8 @@ public class RandomReplaceRealisticTest {
                 Arguments.of("ipAddress", "ipAddressFilterStrategies", "ip ", "192.168.1.1", " ok.", "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"),
                 Arguments.of("itin", "itinFilterStrategies", "itin ", "912-70-1234", ".", "9\\d{2}-\\d{2}-\\d{4}"),
                 Arguments.of("macAddress", "macAddressFilterStrategies", "mac ", "00:1A:2B:3C:4D:5E", " ok.", "[0-9a-f]{2}(:[0-9a-f]{2}){5}"),
+                Arguments.of("mbi", "mbiFilterStrategies", "mbi ", "1EG4-TE5-MK73", ".", "[1-9][A-Z][A-Z0-9]\\d-[A-Z][A-Z0-9]\\d-[A-Z]{2}\\d{2}"),
+                Arguments.of("npi", "npiFilterStrategies", "npi ", "1234567893", ".", "[12]\\d{9}"),
                 Arguments.of("passportNumber", "passportNumberFilterStrategies", "passport ", "123456789", " ok.", "\\d{9}"),
                 Arguments.of("passportNumber", "passportNumberFilterStrategies", "passport ", "03X4567", " ok.", "\\d{2}[A-Z]\\d{4}"),
                 Arguments.of("phoneNumber", "phoneNumberFilterStrategies", "call ", "(202) 555-0143", " now.", "\\(\\d{3}\\) \\d{3}-\\d{4}"),
@@ -123,6 +129,36 @@ public class RandomReplaceRealisticTest {
         final String json = "{ \"identifiers\": { \"canadaSin\": { \"canadaSinFilterStrategies\": [ { \"strategy\": \"RANDOM_REPLACE\" } ] } } }";
 
         assertEveryReplacement(json, "sin ", "046-454-286", ".", LuhnValidator::isValid);
+
+    }
+
+    @Test
+    public void npiReplacementIsAValidNpi() throws Exception {
+
+        final String json = "{ \"identifiers\": { \"npi\": { \"npiFilterStrategies\": [ { \"strategy\": \"RANDOM_REPLACE\" } ] } } }";
+
+        assertEveryReplacement(json, "npi ", "1234567893", ".", NpiFilter::isValid);
+
+    }
+
+    @Test
+    public void deaNumberReplacementIsAValidDeaNumber() throws Exception {
+
+        final String json = "{ \"identifiers\": { \"deaNumber\": { \"deaNumberFilterStrategies\": [ { \"strategy\": \"RANDOM_REPLACE\" } ] } } }";
+
+        assertEveryReplacement(json, "dea ", "AB1234563", ".", r -> r.startsWith("A") && DeaNumberFilter.isValid(r));
+        assertEveryReplacement(json, "dea ", "F91234563", ".", r -> r.startsWith("F9") && DeaNumberFilter.isValid(r));
+
+    }
+
+    @Test
+    public void mbiReplacementIsAValidMbiWithTheSameLayout() throws Exception {
+
+        final String json = "{ \"identifiers\": { \"mbi\": { \"mbiFilterStrategies\": [ { \"strategy\": \"RANDOM_REPLACE\" } ] } } }";
+
+        assertEveryReplacement(json, "mbi ", "1EG4TE5MK73", ".", r -> r.length() == 11 && MbiFilter.isValid(r));
+        assertEveryReplacement(json, "mbi ", "1EG4 TE5 MK73", ".", r -> r.matches("\\w{4} \\w{3} \\w{4}") && MbiFilter.isValid(r));
+        assertEveryReplacement(json, "mbi ", "1eg4te5mk73", ".", r -> r.equals(r.toLowerCase(Locale.ROOT)) && MbiFilter.isValid(r));
 
     }
 

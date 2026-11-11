@@ -44,6 +44,7 @@ import ai.philterd.phileas.services.anonymization.CountyAnonymizationService;
 import ai.philterd.phileas.services.anonymization.CreditCardAnonymizationService;
 import ai.philterd.phileas.services.anonymization.CurrencyAnonymizationService;
 import ai.philterd.phileas.services.anonymization.DateAnonymizationService;
+import ai.philterd.phileas.services.anonymization.DeaNumberAnonymizationService;
 import ai.philterd.phileas.services.anonymization.EmailAddressAnonymizationService;
 import ai.philterd.phileas.services.anonymization.FirstNameAnonymizationService;
 import ai.philterd.phileas.services.anonymization.HospitalAbbreviationAnonymizationService;
@@ -52,6 +53,8 @@ import ai.philterd.phileas.services.anonymization.IbanCodeAnonymizationService;
 import ai.philterd.phileas.services.anonymization.IpAddressAnonymizationService;
 import ai.philterd.phileas.services.anonymization.ItinAnonymizationService;
 import ai.philterd.phileas.services.anonymization.MacAddressAnonymizationService;
+import ai.philterd.phileas.services.anonymization.MbiAnonymizationService;
+import ai.philterd.phileas.services.anonymization.NpiAnonymizationService;
 import ai.philterd.phileas.services.anonymization.PassportNumberAnonymizationService;
 import ai.philterd.phileas.services.anonymization.PersonsAnonymizationService;
 import ai.philterd.phileas.services.anonymization.PhoneNumberAnonymizationService;
@@ -408,6 +411,8 @@ public abstract class Filter {
             return new CurrencyAnonymizationService(random, candidates);
         } else if(filterType == FilterType.DATE) {
             return new DateAnonymizationService(random, candidates);
+        } else if(filterType == FilterType.DEA_NUMBER) {
+            return new DeaNumberAnonymizationService(random, candidates);
         } else if(filterType == FilterType.EMAIL_ADDRESS) {
             return new EmailAddressAnonymizationService(random, candidates);
         } else if(filterType == FilterType.FIRST_NAME) {
@@ -424,6 +429,10 @@ public abstract class Filter {
             return new ItinAnonymizationService(random, candidates);
         } else if(filterType == FilterType.MAC_ADDRESS) {
             return new MacAddressAnonymizationService(random, candidates);
+        } else if(filterType == FilterType.MBI) {
+            return new MbiAnonymizationService(random, candidates);
+        } else if(filterType == FilterType.NPI) {
+            return new NpiAnonymizationService(random, candidates);
         } else if(filterType == FilterType.PASSPORT_NUMBER) {
             return new PassportNumberAnonymizationService(random, candidates);
         } else if(filterType == FilterType.PHONE_NUMBER) {

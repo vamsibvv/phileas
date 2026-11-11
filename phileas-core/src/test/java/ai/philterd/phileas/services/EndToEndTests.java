@@ -554,6 +554,75 @@ public class EndToEndTests {
 
     }
 
+    @Test
+    public void endToEndNpiDeaNumberAndMbi() throws Exception {
+
+        final Properties properties = new Properties();
+        final PhileasConfiguration phileasConfiguration = new PhileasConfiguration(properties);
+
+        final String json = """
+                {
+                  "identifiers": {
+                    "npi": {
+                      "npiFilterStrategies": [ { "strategy": "REDACT" } ]
+                    },
+                    "deaNumber": {
+                      "deaNumberFilterStrategies": [ { "strategy": "REDACT" } ]
+                    },
+                    "mbi": {
+                      "mbiFilterStrategies": [ { "strategy": "REDACT" } ]
+                    }
+                  }
+                }
+                """;
+        final Policy policy = new com.google.gson.Gson().fromJson(json, Policy.class);
+
+        final PlainTextFilterService service = new PlainTextFilterService(phileasConfiguration, contextService, vectorService, null);
+
+        final TextFilterResult response = service.filter(policy, "context",
+                "Prescriber NPI 1234567893, DEA AB1234563. Patient MBI 1EG4-TE5-MK73.");
+
+        Assertions.assertEquals("Prescriber NPI {{{REDACTED-npi}}}, DEA {{{REDACTED-dea-number}}}. Patient MBI {{{REDACTED-mbi}}}.",
+                response.getFilteredText().trim());
+
+        // Values that fail the check digit or the format are left in the clear.
+        final String invalid = "NPI 1234567890, DEA AB1234562, MBI 1BG4-TE5-MK73.";
+        Assertions.assertEquals(invalid, service.filter(policy, "context", invalid).getFilteredText().trim());
+
+    }
+
+    @Test
+    public void endToEndNpiAndPhoneNumber() throws Exception {
+
+        final Properties properties = new Properties();
+        final PhileasConfiguration phileasConfiguration = new PhileasConfiguration(properties);
+
+        // With both enabled the existing span disambiguation applies; no NPI-specific rule.
+        final String json = """
+                {
+                  "identifiers": {
+                    "phoneNumber": {
+                      "phoneNumberFilterStrategies": [ { "strategy": "REDACT" } ]
+                    },
+                    "npi": {
+                      "npiFilterStrategies": [ { "strategy": "REDACT" } ]
+                    }
+                  }
+                }
+                """;
+        final Policy policy = new com.google.gson.Gson().fromJson(json, Policy.class);
+
+        final PlainTextFilterService service = new PlainTextFilterService(phileasConfiguration, contextService, vectorService, null);
+
+        // A formatted phone number is not an NPI.
+        Assertions.assertEquals("call {{{REDACTED-phone-number}}}.", service.filter(policy, "context", "call (202) 555-0143.").getFilteredText().trim());
+
+        // An NPI is redacted, as an NPI or, if the phone number filter also matches it, as a phone number.
+        final String npi = service.filter(policy, "context", "the npi is 2234567891.").getFilteredText().trim();
+        Assertions.assertTrue(npi.equals("the npi is {{{REDACTED-npi}}}.") || npi.equals("the npi is {{{REDACTED-phone-number}}}."), npi);
+
+    }
+
     /** Filters the text with a policy that applies RANDOM_REPLACE, with the given extra properties, to one filter. */
     private String randomReplace(final String filter, final String strategyProperties, final String text) throws Exception {
 

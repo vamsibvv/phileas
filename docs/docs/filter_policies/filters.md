@@ -44,6 +44,7 @@ Phileas uses several methods to identify person's names.
 | [Credit Card Numbers](filters/common_filters/creditcards.md)                 | Identifies VISA, American Express, MasterCard, and Discover credit card numbers |
 | [Currency](filters/common_filters/currency.md)                                | Identifies monetary amounts such as `$100.00`                                    |
 | [Dates](filters/common_filters/dates.md)                                      | Identifies dates in many formats such as May 22, 1999                           |
+| [DEA Registration Numbers](filters/common_filters/dea-numbers.md)             | Identifies DEA registration numbers such as `AB1234563`                         |
 | [Driver's License Numbers](filters/common_filters/drivers-license-numbers.md) | Identifies driver's license numbers for all 50 US states                        |
 | [Email Addresses](filters/common_filters/email-addresses.md)                  | Identifies email addresses                                                      |
 | [Employer Identification Numbers (EIN)](filters/common_filters/ein.md)        | Identifies US Employer Identification Numbers such as `12-3456789`              |
@@ -52,6 +53,8 @@ Phileas uses several methods to identify person's names.
 | [IP Addresses](filters/common_filters/ip-addresses.md)                        | Identifies IPv4 and IPv6 addresses                                              |
 | [Individual Taxpayer Identification Numbers (ITIN)](filters/common_filters/itin.md) | Identifies US Individual Taxpayer Identification Numbers such as `912-70-1234` |
 | [MAC Addresses](filters/common_filters/mac-addresses.md)                      | Identifies network MAC addresses                                                |
+| [Medicare Beneficiary Identifiers (MBI)](filters/common_filters/mbi.md)       | Identifies Medicare Beneficiary Identifiers such as `1EG4-TE5-MK73`             |
+| [National Provider Identifiers (NPI)](filters/common_filters/npi.md)          | Identifies US National Provider Identifiers such as `1234567893`                |
 | [Passport Numbers](filters/common_filters/passport-numbers.md)                | Identifies US passport numbers                                                  |
 | [Phone Numbers](filters/common_filters/phone-numbers.md)                      | Identifies phone numbers                                                        |
 | [Phone Number Extensions](filters/common_filters/phone-number-extensions.md)  | Identifies phone numbers                                                        |
